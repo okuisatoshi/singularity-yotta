@@ -8,15 +8,15 @@ apt-get install -y python-setuptools cmake build-essential ninja-build python-de
 apt-get clean
 
 pip3 install yotta
-cp /version.py /usr/local/lib/python3.7/dist-packages/yotta/lib
-
-%files
 
 # Workaround for suppressing error: "'RegistryThingVersion' object has no attribute 'truncate'"
 # See: https://github.com/ARMmbed/yotta/issues/856
-version.py /
+sed -i \
+    -e '/__ge__/{n;a \\n    def truncate(self, level):\n        return self.version.truncate(level)'\
+    -e '}'\
+    /usr/local/lib/python3.7/dist-packages/yotta/lib/version.py
 
 %runscript
 
-/usr/local/bin/yotta
+exec /usr/local/bin/yotta "$@"
 
